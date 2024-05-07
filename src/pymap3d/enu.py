@@ -206,7 +206,7 @@ def geodetic2enu(
 
 def enu2ecefv(e, n, u, lat0, lon0, deg: bool = True) -> tuple:
     """
-    VECTOR from observer to target  ENU => ECEF
+    VECTOR from observer to target ENU => ECEF
 
     Parameters
     ----------
