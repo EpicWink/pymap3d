@@ -44,7 +44,7 @@ from .ecef import (
     uvw2enu,
 )
 from .ellipsoid import Ellipsoid
-from .enu import aer2enu, enu2aer, enu2geodetic, geodetic2enu
+from .enu import aer2enu, enu2aer, enu2geodetic, geodetic2enu, enu2ecefv
 from .ned import (
     aer2ned,
     ecef2ned,
@@ -76,6 +76,7 @@ __all__ = [
     "aer2enu",
     "enu2aer",
     "enu2geodetic",
+    "enu2ecefv",
     "geodetic2enu",
     "aer2ned",
     "ecef2ned",

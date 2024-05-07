@@ -12,7 +12,7 @@ from .ecef import ecef2geodetic, enu2ecef, geodetic2ecef, uvw2enu
 from .ellipsoid import Ellipsoid
 from .mathfun import atan2, cos, degrees, hypot, radians, sin
 
-__all__ = ["enu2aer", "aer2enu", "enu2geodetic", "geodetic2enu"]
+__all__ = ["enu2aer", "aer2enu", "enu2geodetic", "geodetic2enu", "enu2ecefv"]
 
 ELL = Ellipsoid.from_name("wgs84")
 
@@ -202,3 +202,43 @@ def geodetic2enu(
     x2, y2, z2 = geodetic2ecef(lat0, lon0, h0, ell, deg=deg)
 
     return uvw2enu(x1 - x2, y1 - y2, z1 - z2, lat0, lon0, deg=deg)
+
+
+def enu2ecefv(e, n, u, lat0, lon0, deg: bool = True) -> tuple:
+    """
+    VECTOR from observer to target  ENU => ECEF
+
+    Parameters
+    ----------
+    e
+        target e ENU coordinate
+    n
+        target n ENU coordinate
+    u
+        target u ENU coordinate
+    lat0
+           Observer geodetic latitude
+    lon0
+           Observer geodetic longitude
+    deg : bool, optional
+          degrees input/output  (False: radians in/out)
+
+    Returns
+    -------
+    x
+        target x ECEF coordinate
+    y
+        target y ECEF coordinate
+    z
+        target z ECEF coordinate
+
+    """
+    if deg:
+        lat0 = radians(lat0)
+        lon0 = radians(lon0)
+
+    x = -sin(lon0) * e - sin(lat0) * cos(lon0) * n + cos(lat0) * cos(lon0) * u
+    y = cos(lon0) * e - sin(lat0) * sin(lon0) * n + cos(lat0) * sin(lon0) * u
+    z = cos(lat0) * n + sin(lat0) * u
+
+    return x, y, z

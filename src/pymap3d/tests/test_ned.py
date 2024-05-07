@@ -24,6 +24,7 @@ def test_enuv_nedv():
     vx, vy, vz = (5, 3, 2)
     ve, vn, vu = (5.368859646588048, 3.008520763668120, -0.352347711524077)
     assert pm.ecef2enuv(vx, vy, vz, *lla0[:2]) == approx((ve, vn, vu))
+    assert pm.enu2ecefv(ve, vn, vu, *lla0[:2]) == approx((vx, vy, vz))
 
     assert pm.ecef2nedv(vx, vy, vz, *lla0[:2]) == approx((vn, ve, -vu))
 
