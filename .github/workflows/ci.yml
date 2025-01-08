@@ -15,13 +15,13 @@ jobs:
     name: ${{ matrix.os }} Python ${{ matrix.python-version }}
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-latest]
         include:
         - os: macos-latest
-          python-version: '3.12'
+          python-version: '3.13'
         - os: windows-latest
-          python-version: '3.12'
+          python-version: '3.13'
 
     steps:
     - uses: actions/checkout@v4
@@ -38,13 +38,14 @@ jobs:
 
     - run: pytest
 
+
   coverage:
     runs-on: ubuntu-latest
-    name: Python ${{ matrix.python-version }}
+    name: Coverage Python ${{ matrix.python-version }}
 
     strategy:
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.13"]
 
     steps:
       - uses: actions/checkout@v4
