@@ -9,7 +9,13 @@ try:
 
     from .eci import ecef2eci, eci2ecef
 except ImportError:
-    pass
+
+    def eci2ecef(x, y, z, time: datetime) -> tuple:
+        raise ImportError("Numpy required for eci2ecef")
+
+    def ecef2eci(x, y, z, time: datetime) -> tuple:
+        raise ImportError("Numpy required for ecef2eci")
+
 
 from datetime import datetime
 from math import pi
@@ -432,10 +438,7 @@ def eci2geodetic(x, y, z, t: datetime, ell: Ellipsoid = ELL, *, deg: bool = True
     eci2geodetic() a.k.a. eci2lla()
     """
 
-    try:
-        xecef, yecef, zecef = eci2ecef(x, y, z, t)
-    except NameError:
-        raise ImportError("pip install numpy")
+    xecef, yecef, zecef = eci2ecef(x, y, z, t)
 
     return ecef2geodetic(xecef, yecef, zecef, ell, deg)
 
@@ -475,10 +478,7 @@ def geodetic2eci(lat, lon, alt, t: datetime, ell: Ellipsoid = ELL, *, deg: bool 
 
     x, y, z = geodetic2ecef(lat, lon, alt, ell, deg)
 
-    try:
-        return ecef2eci(x, y, z, t)
-    except NameError:
-        raise ImportError("pip install numpy")
+    return ecef2eci(x, y, z, t)
 
 
 def enu2ecef(

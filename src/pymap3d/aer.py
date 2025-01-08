@@ -11,7 +11,13 @@ from .enu import aer2enu, enu2aer, geodetic2enu
 try:
     from .eci import ecef2eci, eci2ecef
 except ImportError:
-    pass
+
+    def eci2ecef(x, y, z, time: datetime) -> tuple:
+        raise ImportError("Numpy required for eci2ecef")
+
+    def ecef2eci(x, y, z, time: datetime) -> tuple:
+        raise ImportError("Numpy required for ecef2eci")
+
 
 __all__ = ["aer2ecef", "ecef2aer", "geodetic2aer", "aer2geodetic", "eci2aer", "aer2eci"]
 
@@ -62,6 +68,7 @@ def ecef2aer(
     srange : float
          slant range [meters]
     """
+
     xEast, yNorth, zUp = ecef2enu(x, y, z, lat0, lon0, h0, ell, deg=deg)
 
     return enu2aer(xEast, yNorth, zUp, deg=deg)
@@ -255,10 +262,7 @@ def aer2eci(
 
     x, y, z = aer2ecef(az, el, srange, lat0, lon0, h0, ell, deg=deg)
 
-    try:
-        return ecef2eci(x, y, z, t)
-    except NameError:
-        raise ImportError("pip install numpy")
+    return ecef2eci(x, y, z, t)
 
 
 def aer2ecef(
