@@ -58,6 +58,25 @@ from .sidereal import datetime2sidereal, greenwichsrt
 from .spherical import geodetic2spherical, spherical2geodetic
 from .timeconv import str2dt
 
+from .latitude import (
+    geodetic2isometric,
+    isometric2geodetic,
+    geodetic2rectifying,
+    rectifying2geodetic,
+    geodetic2conformal,
+    conformal2geodetic,
+    geodetic2parametric,
+    parametric2geodetic,
+    geodetic2geocentric,
+    geocentric2geodetic,
+    geodetic2authalic,
+    authalic2geodetic,
+    geod2geoc,
+    geoc2geod,
+)
+
+from .rcurve import parallel, meridian, transverse, geocentric_radius
+
 __all__ = [
     "aer2ecef",
     "aer2geodetic",
@@ -92,6 +111,24 @@ __all__ = [
     "str2dt",
     "azel2radec",
     "radec2azel",
+    "parallel",
+    "meridian",
+    "transverse",
+    "geocentric_radius",
+    "geodetic2isometric",
+    "isometric2geodetic",
+    "geodetic2rectifying",
+    "rectifying2geodetic",
+    "geodetic2conformal",
+    "conformal2geodetic",
+    "geodetic2parametric",
+    "parametric2geodetic",
+    "geodetic2geocentric",
+    "geocentric2geodetic",
+    "geodetic2authalic",
+    "authalic2geodetic",
+    "geod2geoc",
+    "geoc2geod",
 ]
 
 try:
