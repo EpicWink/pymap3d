@@ -38,19 +38,31 @@ def datetime2sidereal(time: datetime, lon_radians: float) -> float:
         return [datetime2sidereal(t, lon_radians) for t in time]
 
     try:
-        tsr = (
-            Time(time)
-            .sidereal_time(kind="apparent", longitude=Longitude(lon_radians, unit=u.radian))
-            .radian
-        )
+        return datetime2sidereal_astropy(time, lon_radians)
     except NameError:
-        jd = juliandate(str2dt(time))
-        # %% Greenwich Sidereal time RADIANS
-        gst = greenwichsrt(jd)
-        # %% Algorithm 15 p. 188 rotate GST to LOCAL SIDEREAL TIME
-        tsr = gst + lon_radians
+        return datetime2sidereal_vallado(time, lon_radians)
 
-    return tsr
+
+def datetime2sidereal_astropy(t: datetime, lon_radians: float) -> float:
+    """ datetime to sidereal time using astropy
+    see datetime2sidereal() for description
+    """
+
+    at = Time(t)
+    tsr = at.sidereal_time(kind="apparent", longitude=Longitude(lon_radians, unit=u.radian))
+    return tsr.radian
+
+
+def datetime2sidereal_vallado(t: datetime, lon_radians: float) -> float:
+    """ datetime to sidereal time using Vallado methods
+    see datetime2sidereal() for description
+    """
+
+    jd = juliandate(str2dt(t))
+    # Greenwich Sidereal time RADIANS
+    gst = greenwichsrt(jd)
+    # Algorithm 15 p. 188 rotate GST to LOCAL SIDEREAL TIME
+    return gst + lon_radians
 
 
 def juliandate(time: datetime) -> float:
