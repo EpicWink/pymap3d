@@ -199,12 +199,9 @@ def eci2aer(x, y, z, lat0, lon0, h0, t: datetime, *, deg: bool = True) -> tuple:
          slant range [meters]
     """
 
-    try:
-        xecef, yecef, zecef = eci2ecef(x, y, z, t)
-    except NameError:
-        raise ImportError("pip install numpy")
+    xe, ye, ze = eci2ecef(x, y, z, t)
 
-    return ecef2aer(xecef, yecef, zecef, lat0, lon0, h0, deg=deg)
+    return ecef2aer(xe, ye, ze, lat0, lon0, h0, deg=deg)
 
 
 def aer2eci(

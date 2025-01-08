@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-import numpy as np
+import numpy
 
 try:
     import astropy.units as u
@@ -45,34 +45,95 @@ def eci2ecef(x, y, z, time: datetime) -> tuple:
     """
 
     try:
-        gcrs = GCRS(CartesianRepresentation(x * u.m, y * u.m, z * u.m), obstime=time)
-        itrs = gcrs.transform_to(ITRS(obstime=time))
-
-        x_ecef = itrs.x.value
-        y_ecef = itrs.y.value
-        z_ecef = itrs.z.value
+        return eci2ecef_astropy(x, y, z, time)
     except NameError:
-        x = np.atleast_1d(x)
-        y = np.atleast_1d(y)
-        z = np.atleast_1d(z)
-        gst = np.atleast_1d(greenwichsrt(juliandate(time)))
-        assert (
-            x.shape == y.shape == z.shape
-        ), f"shape mismatch: x: ${x.shape}  y: {y.shape}  z: {z.shape}"
-        if gst.size == 1 and x.size != 1:
-            gst = np.broadcast_to(gst, x.shape[0])
-        assert x.size == gst.size, f"shape mismatch: x: {x.shape}  gst: {gst.shape}"
+        return eci2ecef_numpy(x, y, z, time)
 
-        eci = np.column_stack((x.ravel(), y.ravel(), z.ravel()))
-        ecef = np.empty((x.size, 3))
-        for i in range(eci.shape[0]):
-            ecef[i, :] = R3(gst[i]) @ eci[i, :].T
 
-        x_ecef = ecef[:, 0].reshape(x.shape)
-        y_ecef = ecef[:, 1].reshape(y.shape)
-        z_ecef = ecef[:, 2].reshape(z.shape)
+def eci2ecef_astropy(x, y, z, t: datetime) -> tuple:
+    """
+    eci2ecef using Astropy
+
+    Parameters
+    ----------
+    x : float
+        ECI x-location [meters]
+    y : float
+        ECI y-location [meters]
+    z : float
+        ECI z-location [meters]
+    t : datetime.datetime
+        time of obsevation (UTC)
+
+    Results
+    -------
+    x_ecef : float
+        x ECEF coordinate
+    y_ecef : float
+        y ECEF coordinate
+    z_ecef : float
+        z ECEF coordinate
+    """
+
+    gcrs = GCRS(CartesianRepresentation(x * u.m, y * u.m, z * u.m), obstime=t)
+    itrs = gcrs.transform_to(ITRS(obstime=t))
+
+    x_ecef = itrs.x.value
+    y_ecef = itrs.y.value
+    z_ecef = itrs.z.value
 
     return x_ecef, y_ecef, z_ecef
+
+
+def eci2ecef_numpy(x, y, z, t: datetime) -> tuple:
+    """
+    eci2ecef using Numpy
+
+    less accurate than astropy, but may be good enough.
+
+    Parameters
+    ----------
+    x : float
+        ECI x-location [meters]
+    y : float
+        ECI y-location [meters]
+    z : float
+        ECI z-location [meters]
+    t : datetime.datetime
+        time of obsevation (UTC)
+
+    Results
+    -------
+    x_ecef : float
+        x ECEF coordinate
+    y_ecef : float
+        y ECEF coordinate
+    z_ecef : float
+        z ECEF coordinate
+    """
+
+    x = numpy.atleast_1d(x)
+    y = numpy.atleast_1d(y)
+    z = numpy.atleast_1d(z)
+    gst = numpy.atleast_1d(greenwichsrt(juliandate(t)))
+    assert (
+        x.shape == y.shape == z.shape
+    ), f"shape mismatch: x: ${x.shape}  y: {y.shape}  z: {z.shape}"
+
+    if gst.size == 1 and x.size != 1:
+        gst = numpy.broadcast_to(gst, x.shape[0])
+    assert x.size == gst.size, f"shape mismatch: x: {x.shape}  gst: {gst.shape}"
+
+    eci = numpy.column_stack((x.ravel(), y.ravel(), z.ravel()))
+    ecef = numpy.empty((x.size, 3))
+    for i in range(eci.shape[0]):
+        ecef[i, :] = R3(gst[i]) @ eci[i, :].T
+
+    x_ecef = ecef[:, 0].reshape(x.shape)
+    y_ecef = ecef[:, 1].reshape(y.shape)
+    z_ecef = ecef[:, 2].reshape(z.shape)
+
+    return x_ecef.squeeze()[()], y_ecef.squeeze()[()], z_ecef.squeeze()[()]
 
 
 def ecef2eci(x, y, z, time: datetime) -> tuple:
@@ -112,15 +173,15 @@ def ecef2eci(x, y, z, time: datetime) -> tuple:
         y_eci = eci.y.value
         z_eci = eci.z.value
     except NameError:
-        x = np.atleast_1d(x)
-        y = np.atleast_1d(y)
-        z = np.atleast_1d(z)
-        gst = np.atleast_1d(greenwichsrt(juliandate(time)))
+        x = numpy.atleast_1d(x)
+        y = numpy.atleast_1d(y)
+        z = numpy.atleast_1d(z)
+        gst = numpy.atleast_1d(greenwichsrt(juliandate(time)))
         assert x.shape == y.shape == z.shape
         assert x.size == gst.size
 
-        ecef = np.column_stack((x.ravel(), y.ravel(), z.ravel()))
-        eci = np.empty((x.size, 3))
+        ecef = numpy.column_stack((x.ravel(), y.ravel(), z.ravel()))
+        eci = numpy.empty((x.size, 3))
         for i in range(x.size):
             eci[i, :] = R3(gst[i]).T @ ecef[i, :]
 
@@ -133,4 +194,6 @@ def ecef2eci(x, y, z, time: datetime) -> tuple:
 
 def R3(x: float):
     """Rotation matrix for ECI"""
-    return np.array([[np.cos(x), np.sin(x), 0], [-np.sin(x), np.cos(x), 0], [0, 0, 1]])
+    return numpy.array(
+        [[numpy.cos(x), numpy.sin(x), 0], [-numpy.sin(x), numpy.cos(x), 0], [0, 0, 1]]
+    )

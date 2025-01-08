@@ -75,9 +75,7 @@ def geodetic2ecef(
         lon = radians(lon)
 
     # radius of curvature of the prime vertical section
-    N = ell.semimajor_axis**2 / hypot(
-        ell.semimajor_axis * cos(lat), ell.semiminor_axis * sin(lat)
-    )
+    N = ell.semimajor_axis**2 / hypot(ell.semimajor_axis * cos(lat), ell.semiminor_axis * sin(lat))
     # Compute cartesian (geocentric) coordinates given (curvilinear) geodetic coordinates.
     x = (N + alt) * cos(lat) * cos(lon)
     y = (N + alt) * cos(lat) * sin(lon)
@@ -202,9 +200,7 @@ def ecef2geodetic(
 
     # inside ellipsoid?
     inside = (
-        x**2 / ell.semimajor_axis**2
-        + y**2 / ell.semimajor_axis**2
-        + z**2 / ell.semiminor_axis**2
+        x**2 / ell.semimajor_axis**2 + y**2 / ell.semimajor_axis**2 + z**2 / ell.semiminor_axis**2
         < 1
     )
 

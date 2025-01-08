@@ -3,6 +3,7 @@ Transformation of 3D coordinates between geocentric geodetic (latitude,
 longitude, height) and geocentric spherical (spherical latitude, longitude,
 radius).
 """
+
 from __future__ import annotations
 
 from .ellipsoid import Ellipsoid
