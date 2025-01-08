@@ -44,7 +44,7 @@ def datetime2sidereal(time: datetime, lon_radians: float) -> float:
 
 
 def datetime2sidereal_astropy(t: datetime, lon_radians: float) -> float:
-    """ datetime to sidereal time using astropy
+    """datetime to sidereal time using astropy
     see datetime2sidereal() for description
     """
 
@@ -54,7 +54,7 @@ def datetime2sidereal_astropy(t: datetime, lon_radians: float) -> float:
 
 
 def datetime2sidereal_vallado(t: datetime, lon_radians: float) -> float:
-    """ datetime to sidereal time using Vallado methods
+    """datetime to sidereal time using Vallado methods
     see datetime2sidereal() for description
     """
 

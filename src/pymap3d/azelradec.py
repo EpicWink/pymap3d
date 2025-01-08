@@ -52,17 +52,24 @@ def azel2radec(
     """
 
     try:
-        obs = EarthLocation(lat=lat_deg * u.deg, lon=lon_deg * u.deg)
-
-        direc = AltAz(
-            location=obs, obstime=Time(str2dt(time)), az=az_deg * u.deg, alt=el_deg * u.deg
-        )
-
-        sky = SkyCoord(direc.transform_to(ICRS()))
-
-        return sky.ra.deg, sky.dec.deg
+        return azel2radec_astropy(az_deg, el_deg, lat_deg, lon_deg, time)
     except NameError:
         return vazel2radec(az_deg, el_deg, lat_deg, lon_deg, time)
+
+
+def azel2radec_astropy(
+    az_deg: float, el_deg: float, lat_deg: float, lon_deg: float, time: datetime
+) -> tuple[float, float]:
+    """azel2radec using Astropy
+    see azel2radec() for description
+    """
+    obs = EarthLocation(lat=lat_deg * u.deg, lon=lon_deg * u.deg)
+
+    direc = AltAz(location=obs, obstime=Time(str2dt(time)), az=az_deg * u.deg, alt=el_deg * u.deg)
+
+    sky = SkyCoord(direc.transform_to(ICRS()))
+
+    return sky.ra.deg, sky.dec.deg
 
 
 def radec2azel(
@@ -97,10 +104,27 @@ def radec2azel(
     """
 
     try:
-        obs = EarthLocation(lat=lat_deg * u.deg, lon=lon_deg * u.deg)
-        points = SkyCoord(Angle(ra_deg, unit=u.deg), Angle(dec_deg, unit=u.deg), equinox="J2000.0")
-        altaz = points.transform_to(AltAz(location=obs, obstime=Time(str2dt(time))))
-
-        return altaz.az.degree, altaz.alt.degree
+        return radec2azel_astropy(ra_deg, dec_deg, lat_deg, lon_deg, time)
     except NameError:
         return vradec2azel(ra_deg, dec_deg, lat_deg, lon_deg, time)
+
+
+def radec2azel_astropy(
+    ra_deg: float,
+    dec_deg: float,
+    lat_deg: float,
+    lon_deg: float,
+    time: datetime,
+) -> tuple[float, float]:
+    """
+    rade2azel using Astropy
+    see radec2azel() for description
+    """
+
+    obs = EarthLocation(lat=lat_deg * u.deg, lon=lon_deg * u.deg)
+
+    points = SkyCoord(Angle(ra_deg, unit=u.deg), Angle(dec_deg, unit=u.deg), equinox="J2000.0")
+
+    altaz = points.transform_to(AltAz(location=obs, obstime=Time(str2dt(time))))
+
+    return altaz.az.degree, altaz.alt.degree
