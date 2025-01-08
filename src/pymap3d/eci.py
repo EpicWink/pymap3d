@@ -54,25 +54,7 @@ def eci2ecef_astropy(x, y, z, t: datetime) -> tuple:
     """
     eci2ecef using Astropy
 
-    Parameters
-    ----------
-    x : float
-        ECI x-location [meters]
-    y : float
-        ECI y-location [meters]
-    z : float
-        ECI z-location [meters]
-    t : datetime.datetime
-        time of obsevation (UTC)
-
-    Results
-    -------
-    x_ecef : float
-        x ECEF coordinate
-    y_ecef : float
-        y ECEF coordinate
-    z_ecef : float
-        z ECEF coordinate
+    see eci2ecef() for description
     """
 
     gcrs = GCRS(CartesianRepresentation(x * u.m, y * u.m, z * u.m), obstime=t)
@@ -89,27 +71,7 @@ def eci2ecef_numpy(x, y, z, t: datetime) -> tuple:
     """
     eci2ecef using Numpy
 
-    less accurate than astropy, but may be good enough.
-
-    Parameters
-    ----------
-    x : float
-        ECI x-location [meters]
-    y : float
-        ECI y-location [meters]
-    z : float
-        ECI z-location [meters]
-    t : datetime.datetime
-        time of obsevation (UTC)
-
-    Results
-    -------
-    x_ecef : float
-        x ECEF coordinate
-    y_ecef : float
-        y ECEF coordinate
-    z_ecef : float
-        z ECEF coordinate
+    see eci2ecef() for description
     """
 
     x = numpy.atleast_1d(x)
@@ -165,31 +127,48 @@ def ecef2eci(x, y, z, time: datetime) -> tuple:
     """
 
     try:
-        itrs = ITRS(CartesianRepresentation(x * u.m, y * u.m, z * u.m), obstime=time)
-        gcrs = itrs.transform_to(GCRS(obstime=time))
-        eci = EarthLocation(*gcrs.cartesian.xyz)
-
-        x_eci = eci.x.value
-        y_eci = eci.y.value
-        z_eci = eci.z.value
+        return ecef2eci_astropy(x, y, z, time)
     except NameError:
-        x = numpy.atleast_1d(x)
-        y = numpy.atleast_1d(y)
-        z = numpy.atleast_1d(z)
-        gst = numpy.atleast_1d(greenwichsrt(juliandate(time)))
-        assert x.shape == y.shape == z.shape
-        assert x.size == gst.size
+        return ecef2eci_numpy(x, y, z, time)
 
-        ecef = numpy.column_stack((x.ravel(), y.ravel(), z.ravel()))
-        eci = numpy.empty((x.size, 3))
-        for i in range(x.size):
-            eci[i, :] = R3(gst[i]).T @ ecef[i, :]
 
-        x_eci = eci[:, 0].reshape(x.shape)
-        y_eci = eci[:, 1].reshape(y.shape)
-        z_eci = eci[:, 2].reshape(z.shape)
+def ecef2eci_astropy(x, y, z, t: datetime) -> tuple:
+    """ecef2eci using Astropy
+    see ecef2eci() for description
+    """
+    itrs = ITRS(CartesianRepresentation(x * u.m, y * u.m, z * u.m), obstime=t)
+    gcrs = itrs.transform_to(GCRS(obstime=t))
+    eci = EarthLocation(*gcrs.cartesian.xyz)
+
+    x_eci = eci.x.value
+    y_eci = eci.y.value
+    z_eci = eci.z.value
 
     return x_eci, y_eci, z_eci
+
+
+def ecef2eci_numpy(x, y, z, t: datetime) -> tuple:
+    """ecef2eci using Numpy
+    see ecef2eci() for description
+    """
+
+    x = numpy.atleast_1d(x)
+    y = numpy.atleast_1d(y)
+    z = numpy.atleast_1d(z)
+    gst = numpy.atleast_1d(greenwichsrt(juliandate(t)))
+    assert x.shape == y.shape == z.shape
+    assert x.size == gst.size
+
+    ecef = numpy.column_stack((x.ravel(), y.ravel(), z.ravel()))
+    eci = numpy.empty((x.size, 3))
+    for i in range(x.size):
+        eci[i, :] = R3(gst[i]).T @ ecef[i, :]
+
+    x_eci = eci[:, 0].reshape(x.shape)
+    y_eci = eci[:, 1].reshape(y.shape)
+    z_eci = eci[:, 2].reshape(z.shape)
+
+    return x_eci.squeeze()[()], y_eci.squeeze()[()], z_eci.squeeze()[()]
 
 
 def R3(x: float):

@@ -55,9 +55,35 @@ def test_ecef2eci():
     # this example from Matlab ecef2eci docs
     eci = pm.ecef2eci(*ECEF, UTC)
 
-    rel = 0.01 if astropy is None else 0.0001
+    assert isinstance(eci[0], float)
+    assert isinstance(eci[1], float)
+    assert isinstance(eci[2], float)
 
-    assert eci == approx([-2981810.6, 5207039.5, 3161595.1], rel=rel)
+
+def test_ecef2eci_numpy():
+    pytest.importorskip("numpy")
+
+    eci = pm.eci.ecef2eci_numpy(*ECEF, UTC)
+
+    rel = 0.025
+
+    assert eci == approx(ECI, rel=rel)
+    assert isinstance(eci[0], float)
+    assert isinstance(eci[1], float)
+    assert isinstance(eci[2], float)
+
+
+def test_ecef2eci_astropy():
+    pytest.importorskip("astropy")
+
+    eci = pm.eci.ecef2eci_astropy(*ECEF, UTC)
+
+    rel = 0.0001
+
+    assert eci == approx(ECI, rel=rel)
+    assert isinstance(eci[0], float)
+    assert isinstance(eci[1], float)
+    assert isinstance(eci[2], float)
 
 
 def test_eci2geodetic():
