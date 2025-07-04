@@ -13,7 +13,7 @@ import sys
 import logging
 
 try:
-    from astropy.coordinates.angle_utilities import angular_separation
+    from astropy.coordinates import angular_separation
 except ImportError:
     pass
 
