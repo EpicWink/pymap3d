@@ -1,4 +1,3 @@
-# Copyright (c) 2014-2018 Michael Hirsch, Ph.D.
 """ manipulations of sidereal time """
 from datetime import datetime
 from math import tau
