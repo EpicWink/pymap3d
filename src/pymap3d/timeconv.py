@@ -1,4 +1,4 @@
-""" convert strings to datetime """
+"""convert strings to datetime"""
 
 from __future__ import annotations
 

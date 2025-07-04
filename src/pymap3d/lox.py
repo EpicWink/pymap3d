@@ -1,4 +1,4 @@
-""" isometric latitude, meridian distance """
+"""isometric latitude, meridian distance"""
 
 from __future__ import annotations
 

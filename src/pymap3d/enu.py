@@ -1,4 +1,4 @@
-""" transforms involving ENU East North Up """
+"""transforms involving ENU East North Up"""
 
 from __future__ import annotations
 

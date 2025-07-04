@@ -27,7 +27,7 @@ def test_eci2ecef():
 def test_eci2ecef_numpy():
     pytest.importorskip("numpy")
 
-    ecef = pm.eci2ecef(*ECI, UTC)
+    ecef = pm.eci2ecef(*ECI, UTC, force_non_astropy=True)
 
     rel = 0.025
 
@@ -53,7 +53,7 @@ def test_eci2ecef_astropy():
 def test_ecef2eci():
     pytest.importorskip("numpy")
     # this example from Matlab ecef2eci docs
-    eci = pm.ecef2eci(*ECEF, UTC)
+    eci = pm.ecef2eci(*ECEF, UTC, force_non_astropy=True)
 
     assert isinstance(eci[0], float)
     assert isinstance(eci[1], float)

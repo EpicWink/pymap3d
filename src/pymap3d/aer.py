@@ -1,4 +1,4 @@
-""" transforms involving AER: azimuth, elevation, slant range"""
+"""transforms involving AER: azimuth, elevation, slant range"""
 
 from __future__ import annotations
 
@@ -12,10 +12,10 @@ try:
     from .eci import ecef2eci, eci2ecef
 except ImportError:
 
-    def eci2ecef(x, y, z, time: datetime) -> tuple:
+    def eci2ecef(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
         raise ImportError("Numpy required for eci2ecef")
 
-    def ecef2eci(x, y, z, time: datetime) -> tuple:
+    def ecef2eci(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
         raise ImportError("Numpy required for ecef2eci")
 
 

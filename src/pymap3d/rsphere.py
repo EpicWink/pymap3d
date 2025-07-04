@@ -1,4 +1,4 @@
-""" compute radii of auxiliary spheres"""
+"""compute radii of auxiliary spheres"""
 
 from __future__ import annotations
 

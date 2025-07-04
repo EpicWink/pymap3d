@@ -131,11 +131,8 @@ __all__ = [
     "geoc2geod",
 ]
 
-try:
-    from .aer import aer2eci, eci2aer
-    from .azelradec import azel2radec, radec2azel
-    from .eci import ecef2eci, eci2ecef
+from .aer import aer2eci, eci2aer
+from .azelradec import azel2radec, radec2azel
+from .eci import ecef2eci, eci2ecef
 
-    __all__ += ["aer2eci", "eci2aer", "ecef2eci", "eci2ecef"]
-except ImportError:
-    from .vallado import azel2radec, radec2azel
+__all__ += ["aer2eci", "eci2aer", "ecef2eci", "eci2ecef"]

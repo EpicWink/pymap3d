@@ -1,4 +1,4 @@
-""" Transforms involving NED North East Down """
+"""Transforms involving NED North East Down"""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-""" Line of sight intersection of space observer to ellipsoid """
+"""Line of sight intersection of space observer to ellipsoid"""
 
 from __future__ import annotations
 
