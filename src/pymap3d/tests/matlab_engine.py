@@ -1,6 +1,5 @@
 import functools
 from pathlib import Path
-from datetime import datetime
 
 import matlab.engine
 
@@ -14,13 +13,6 @@ def matlab_engine():
     eng = matlab.engine.start_matlab("-nojvm")
     eng.addpath(eng.genpath(str(cwd)), nargout=0)
     return eng
-
-
-def pydt2matdt(eng, utc: datetime):
-    """
-    Python datetime.dateime to Matlab datetime
-    """
-    return eng.datetime(utc.year, utc.month, utc.day, utc.hour, utc.minute, utc.second)
 
 
 @functools.cache
@@ -38,9 +30,9 @@ def has_matmap3d(eng) -> bool:
 
 @functools.cache
 def has_aerospace(eng) -> bool:
-    return eng.matlab_toolbox()["aerospace"]
+    return eng.get_matlab_toolboxes()["aerospace"]
 
 
 @functools.cache
 def has_mapping(eng) -> bool:
-    return eng.matlab_toolbox()["mapping"]
+    return eng.get_matlab_toolboxes()["mapping"]
