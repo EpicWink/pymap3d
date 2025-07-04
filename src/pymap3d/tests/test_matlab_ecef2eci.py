@@ -11,26 +11,17 @@ from pytest import approx
 import pymap3d
 
 try:
-    import numpy as np
-    from .matlab_engine import matlab_engine, has_aerospace, has_matmap3d
+    from .matlab_engine import (
+        matlab_engine,
+        has_aerospace,
+        has_matmap3d,
+        matlab_ecef2eci,
+        matlab_eci2ecef,
+    )
 except ImportError:
     pytest.skip("Matlab Engine not found", allow_module_level=True)
 except RuntimeError:
     pytest.skip("Matlab Engine configuration error", allow_module_level=True)
-
-
-def ecef2eci(eng, matmap3d: bool, utc: datetime, ecef):
-    if matmap3d:
-        return eng.matmap3d.ecef2eci(utc, *ecef, nargout=3)
-
-    return np.array(eng.ecef2eci(utc, np.asarray(ecef), nargout=1)).squeeze()
-
-
-def eci2ecef(eng, matmap3d: bool, utc_m, eci):
-    if matmap3d:
-        return eng.matmap3d.eci2ecef(utc_m, *eci, nargout=3)
-
-    return np.array(eng.eci2ecef(utc_m, np.asarray(eci), nargout=1)).squeeze()
 
 
 @pytest.mark.parametrize("matmap3d", [False, True])
@@ -52,7 +43,7 @@ def test_compare_ecef2eci(matmap3d):
 
     eci_py = pymap3d.ecef2eci(ecef[0], ecef[1], ecef[2], utc)
 
-    eci_m = ecef2eci(eng, matmap3d, utc, ecef)
+    eci_m = matlab_ecef2eci(eng, matmap3d, utc, ecef)
 
     assert eci_py == approx(eci_m, rel=rtol)
 
@@ -76,6 +67,6 @@ def test_compare_eci2ecef(matmap3d):
 
     ecef_py = pymap3d.eci2ecef(eci[0], eci[1], eci[2], utc)
 
-    ecef_m = eci2ecef(eng, matmap3d, utc, eci)
+    ecef_m = matlab_eci2ecef(eng, matmap3d, utc, eci)
 
     assert ecef_py == approx(ecef_m, rel=rtol)

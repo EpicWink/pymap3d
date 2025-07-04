@@ -6,6 +6,7 @@ on:
     - "**.py"
     - .github/workflows/ci.yml
     - "!scripts/**"
+    - "!examples/**"
 
 jobs:
 

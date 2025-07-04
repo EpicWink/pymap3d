@@ -9,7 +9,14 @@ import sys
 
 from astropy.time import Time
 import astropy
+import numpy as np
+
 import pymap3d as pm
+
+try:
+    from pymap3d.tests.matlab_engine import matlab_ecef2eci, matlab_engine, has_matmap3d
+except ImportError:
+    matlab_engine = None
 
 print("Python version:", sys.version)
 print("AstroPy version:", astropy.__version__)
@@ -28,12 +35,44 @@ print("Julian Date (UTC):", astropy_time.utc.jd)
 print("Julian Date (TT):", astropy_time.tt.jd)
 print("GMST:", astropy_time.sidereal_time("mean", "greenwich"))
 
+np.set_printoptions(precision=3, suppress=True)
+
 # %% 1. Geodetic to ECEF
 ecef = pm.geodetic2ecef(lat, lon, alt)
 print("\nECEF Coordinates (meters):")
-print(f"X: {ecef[0]:.8f}, Y: {ecef[1]:.8f}, Z: {ecef[2]:.8f}")
+print(np.array(ecef))
 
-# %% 2. ECEF to ECI (J2000)
-eci = pm.ecef2eci(ecef[0], ecef[1], ecef[2], dt)
-print("\nECI Coordinates (meters):")
-print(f"X: {eci[0]}, Y: {eci[1]}, Z: {eci[2]}")
+# %% AstroPy ECEF to ECI (J2000)
+astropy_eci = pm.ecef2eci(ecef[0], ecef[1], ecef[2], dt)
+astropy_eci = np.array(astropy_eci)
+print("\nAstroPy: ECI Coordinates (meters):")
+print(astropy_eci)
+
+numpy_eci = pm.ecef2eci(ecef[0], ecef[1], ecef[2], dt, force_non_astropy=True)
+numpy_eci = np.array(numpy_eci)
+print("\nNumpy: ECI Coordinates (meters):")
+print(numpy_eci)
+
+print("\nAstroPy - Numpy Difference (ECI meters):", astropy_eci - numpy_eci)
+
+# %% Matlab comparison
+if matlab_engine is not None:
+    eng = matlab_engine()
+    eci_matlab_aerospace = matlab_ecef2eci(eng, False, dt, ecef)
+    print("\nMatlab Aerospace Toolbox: ECI Coordinates (meters):")
+    print(np.array(eci_matlab_aerospace))
+    print(
+        "\nAstroPy - Matlab Aerospace Toolbox Difference (ECI meters):",
+        astropy_eci - eci_matlab_aerospace,
+    )
+    print(
+        "Numpy - Matlab Aerospace Toolbox Difference (ECI meters):",
+        numpy_eci - eci_matlab_aerospace,
+    )
+
+    if has_matmap3d(eng):
+        eci_matmap3d = matlab_ecef2eci(eng, True, dt, ecef)
+        print("\nMatlab Matmap3D: ECI Coordinates (meters):")
+        print(np.array(eci_matmap3d))
+        print("\nAstroPy - Matlab Matmap3D Difference (ECI meters):", astropy_eci - eci_matmap3d)
+        print("Numpy - Matlab Matmap3D Difference (ECI meters):", numpy_eci - eci_matmap3d)

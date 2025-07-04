@@ -1,5 +1,8 @@
 import functools
 from pathlib import Path
+from datetime import datetime
+
+import numpy as np
 
 import matlab.engine
 
@@ -36,3 +39,17 @@ def has_aerospace(eng) -> bool:
 @functools.cache
 def has_mapping(eng) -> bool:
     return eng.get_matlab_toolboxes()["mapping"]
+
+
+def matlab_ecef2eci(eng, matmap3d: bool, utc: datetime, ecef):
+    if matmap3d:
+        return eng.matmap3d.ecef2eci(utc, *ecef, nargout=3)
+
+    return np.array(eng.ecef2eci(utc, np.asarray(ecef), nargout=1)).squeeze()
+
+
+def matlab_eci2ecef(eng, matmap3d: bool, utc: datetime, eci):
+    if matmap3d:
+        return eng.matmap3d.eci2ecef(utc, *eci, nargout=3)
+
+    return np.array(eng.eci2ecef(utc, np.asarray(eci), nargout=1)).squeeze()
