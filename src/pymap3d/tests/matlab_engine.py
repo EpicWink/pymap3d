@@ -33,12 +33,12 @@ def has_matmap3d(eng) -> bool:
 
 @functools.cache
 def has_aerospace(eng) -> bool:
-    return eng.get_matlab_toolboxes()["aerospace"]
+    return eng.has_matlab_toolbox("Aerospace Toolbox")
 
 
 @functools.cache
 def has_mapping(eng) -> bool:
-    return eng.get_matlab_toolboxes()["mapping"]
+    return eng.has_matlab_toolbox("Mapping Toolbox")
 
 
 def matlab_ecef2eci(eng, matmap3d: bool, utc: datetime, ecef):
