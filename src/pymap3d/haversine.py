@@ -111,10 +111,9 @@ def anglesep(
         lat1 = radians(lat1)
 
     if force_non_astropy or "astropy" not in sys.modules:
-        logging.debug(f"{__name__}: Meeus implementation")
+        logging.warning(f"{__name__}: Numpy implementation has considerably less accuracy than Astropy")
         sep_rad = anglesep_meeus(lon0, lat0, lon1, lat1, deg=False)
     else:
-        logging.debug(f"{__name__}: Astropy implementation")
         sep_rad = angular_separation(lon0, lat0, lon1, lat1)
 
     return degrees(sep_rad) if deg else sep_rad
