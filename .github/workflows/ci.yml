@@ -35,7 +35,6 @@ jobs:
     - run: flake8
 
     - run: mypy
-      if: ${{ matrix.python-version >= '3.9' }}
 
     - run: pytest
 

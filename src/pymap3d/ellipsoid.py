@@ -4,12 +4,6 @@ from __future__ import annotations
 from math import sqrt
 from dataclasses import dataclass, field
 from typing import TypedDict
-import sys
-
-if sys.version_info < (3, 9):
-    from typing import Dict
-else:
-    Dict = dict
 
 
 class Model(TypedDict):
@@ -66,7 +60,7 @@ class Ellipsoid:
     flattening: float
     thirdflattening: float
     eccentricity: float
-    models = field(default_factory=Dict[str, Model])
+    models = field(default_factory=dict[str, Model])
 
     def __init__(
         self,
