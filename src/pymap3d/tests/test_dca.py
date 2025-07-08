@@ -40,7 +40,7 @@ def test_ecef_dca(ecef, dca, heading):
     lat0, lon0, h0 = 12.0, 15.0, 30.0
 
     assert pm.dca2ecef(*dca, lat0, lon0, h0, heading) == pytest.approx(ecef)
-    assert pm.ecef2dca(*ecef, lat0, lon0, h0, heading) == pytest.approx(dca, rel=1e-9)
+    assert pm.ecef2dca(*ecef, lat0, lon0, h0, heading) == pytest.approx(dca, abs=1e-9)
 
 
 def test_geodetic_dca():
