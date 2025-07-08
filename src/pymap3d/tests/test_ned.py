@@ -4,10 +4,6 @@ from pytest import approx
 lla0 = (42, -82, 200)
 aer0 = (33, 70, 1000)
 
-ELL = pm.Ellipsoid.from_name("wgs84")
-A = ELL.semimajor_axis
-B = ELL.semiminor_axis
-
 
 def test_ecef_ned():
     enu = pm.aer2enu(*aer0)

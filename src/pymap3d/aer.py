@@ -1,4 +1,4 @@
-""" transforms involving AER: azimuth, elevation, slant range"""
+"""transforms involving AER: azimuth, elevation, slant range"""
 
 from __future__ import annotations
 
@@ -12,16 +12,14 @@ try:
     from .eci import ecef2eci, eci2ecef
 except ImportError:
 
-    def eci2ecef(x, y, z, time: datetime) -> tuple:
+    def eci2ecef(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
         raise ImportError("Numpy required for eci2ecef")
 
-    def ecef2eci(x, y, z, time: datetime) -> tuple:
+    def ecef2eci(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
         raise ImportError("Numpy required for ecef2eci")
 
 
 __all__ = ["aer2ecef", "ecef2aer", "geodetic2aer", "aer2geodetic", "eci2aer", "aer2eci"]
-
-ELL = Ellipsoid.from_name("wgs84")
 
 
 def ecef2aer(
@@ -31,7 +29,7 @@ def ecef2aer(
     lat0,
     lon0,
     h0,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """
@@ -81,7 +79,7 @@ def geodetic2aer(
     lat0,
     lon0,
     h0,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """
@@ -129,7 +127,7 @@ def aer2geodetic(
     lat0,
     lon0,
     h0,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """
@@ -219,7 +217,7 @@ def aer2eci(
     lon0,
     h0,
     t: datetime,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     *,
     deg: bool = True,
 ) -> tuple:
@@ -272,7 +270,7 @@ def aer2ecef(
     lat0,
     lon0,
     alt0,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """

@@ -1,23 +1,25 @@
-""" transforms involving ECI earth-centered inertial """
+"""transforms involving ECI earth-centered inertial"""
 
 from __future__ import annotations
 
 from datetime import datetime
-
-import numpy
+import sys
+import logging
 
 try:
+    import numpy
     import astropy.units as u
     from astropy.coordinates import GCRS, ITRS, CartesianRepresentation, EarthLocation
 except ImportError:
     pass
+
 
 from .sidereal import greenwichsrt, juliandate
 
 __all__ = ["eci2ecef", "ecef2eci"]
 
 
-def eci2ecef(x, y, z, time: datetime) -> tuple:
+def eci2ecef(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
     """
     Observer => Point  ECI  =>  ECEF
 
@@ -33,6 +35,8 @@ def eci2ecef(x, y, z, time: datetime) -> tuple:
         ECI z-location [meters]
     time : datetime.datetime
         time of obsevation (UTC)
+    force_non_astropy : bool
+        if True, force use of less accurate Numpy implementation even if Astropy is available
 
     Results
     -------
@@ -44,10 +48,15 @@ def eci2ecef(x, y, z, time: datetime) -> tuple:
         z ECEF coordinate
     """
 
-    try:
-        return eci2ecef_astropy(x, y, z, time)
-    except NameError:
-        return eci2ecef_numpy(x, y, z, time)
+    if "astropy" in sys.modules and not force_non_astropy:
+        xe, ye, ze = eci2ecef_astropy(x, y, z, time)
+    elif "numpy" in sys.modules:
+        logging.warning(f"{__name__}: Numpy implementation has much less accuracy than Astropy")
+        xe, ye, ze = eci2ecef_numpy(x, y, z, time)
+    else:
+        raise ImportError("eci2ecef requires either Numpy or Astropy")
+
+    return xe.squeeze()[()], ye.squeeze()[()], ze.squeeze()[()]
 
 
 def eci2ecef_astropy(x, y, z, t: datetime) -> tuple:
@@ -98,7 +107,7 @@ def eci2ecef_numpy(x, y, z, t: datetime) -> tuple:
     return x_ecef.squeeze()[()], y_ecef.squeeze()[()], z_ecef.squeeze()[()]
 
 
-def ecef2eci(x, y, z, time: datetime) -> tuple:
+def ecef2eci(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
     """
     Point => Point   ECEF => ECI
 
@@ -115,6 +124,8 @@ def ecef2eci(x, y, z, time: datetime) -> tuple:
         target z ECEF coordinate
     time : datetime.datetime
         time of observation
+    force_non_astropy : bool
+        if True, force use of less accurate Numpy implementation even if Astropy is available
 
     Results
     -------
@@ -126,10 +137,15 @@ def ecef2eci(x, y, z, time: datetime) -> tuple:
         z ECI coordinate
     """
 
-    try:
-        return ecef2eci_astropy(x, y, z, time)
-    except NameError:
-        return ecef2eci_numpy(x, y, z, time)
+    if "astropy" in sys.modules and not force_non_astropy:
+        xe, ye, ze = ecef2eci_astropy(x, y, z, time)
+    elif "numpy" in sys.modules:
+        logging.warning(f"{__name__}: Numpy implementation has much less accuracy than Astropy")
+        xe, ye, ze = ecef2eci_numpy(x, y, z, time)
+    else:
+        raise ImportError("ecef2eci requires either Numpy or Astropy")
+
+    return xe, ye, ze
 
 
 def ecef2eci_astropy(x, y, z, t: datetime) -> tuple:
@@ -140,11 +156,7 @@ def ecef2eci_astropy(x, y, z, t: datetime) -> tuple:
     gcrs = itrs.transform_to(GCRS(obstime=t))
     eci = EarthLocation(*gcrs.cartesian.xyz)
 
-    x_eci = eci.x.value
-    y_eci = eci.y.value
-    z_eci = eci.z.value
-
-    return x_eci, y_eci, z_eci
+    return eci.x.value, eci.y.value, eci.z.value
 
 
 def ecef2eci_numpy(x, y, z, t: datetime) -> tuple:
@@ -164,11 +176,11 @@ def ecef2eci_numpy(x, y, z, t: datetime) -> tuple:
     for i in range(x.size):
         eci[i, :] = R3(gst[i]).T @ ecef[i, :]
 
-    x_eci = eci[:, 0].reshape(x.shape)
-    y_eci = eci[:, 1].reshape(y.shape)
-    z_eci = eci[:, 2].reshape(z.shape)
-
-    return x_eci.squeeze()[()], y_eci.squeeze()[()], z_eci.squeeze()[()]
+    return (
+        eci[:, 0].reshape(x.shape).squeeze()[()],
+        eci[:, 1].reshape(y.shape).squeeze()[()],
+        eci[:, 2].reshape(z.shape).squeeze()[()],
+    )
 
 
 def R3(x: float):

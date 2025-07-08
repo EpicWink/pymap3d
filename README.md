@@ -177,6 +177,10 @@ use
 [Matlab Engine for Python](https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html)
 to compare Python PyMap3D output with Matlab output using Matlab functions.
 
+```sh
+python -m pip install matlabengine
+```
+
 ## Notes
 
 As compared to [PyProj](https://github.com/jswhit/pyproj):

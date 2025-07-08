@@ -1,4 +1,4 @@
-""" Transforms involving ECEF: earth-centered, earth-fixed frame """
+"""Transforms involving ECEF: earth-centered, earth-fixed frame"""
 
 from __future__ import annotations
 
@@ -6,20 +6,13 @@ import warnings
 
 try:
     from numpy import asarray, empty_like, finfo, where
-
-    from .eci import ecef2eci, eci2ecef
 except ImportError:
-
-    def eci2ecef(x, y, z, time: datetime) -> tuple:
-        raise ImportError("Numpy required for eci2ecef")
-
-    def ecef2eci(x, y, z, time: datetime) -> tuple:
-        raise ImportError("Numpy required for ecef2eci")
-
+    pass
 
 from datetime import datetime
 from math import pi
 
+from .eci import ecef2eci, eci2ecef
 from .ellipsoid import Ellipsoid
 from .mathfun import atan, atan2, cos, degrees, hypot, isclose, radians, sin, sqrt, tan
 
@@ -35,14 +28,12 @@ __all__ = [
     "enu2ecef",
 ]
 
-ELL = Ellipsoid.from_name("wgs84")
-
 
 def geodetic2ecef(
     lat,
     lon,
     alt,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """
@@ -80,6 +71,9 @@ def geodetic2ecef(
         lat = radians(lat)
         lon = radians(lon)
 
+    if ell is None:
+        ell = Ellipsoid.from_name("wgs84")
+
     # radius of curvature of the prime vertical section
     N = ell.semimajor_axis**2 / hypot(ell.semimajor_axis * cos(lat), ell.semiminor_axis * sin(lat))
     # Compute cartesian (geocentric) coordinates given (curvilinear) geodetic coordinates.
@@ -94,7 +88,7 @@ def ecef2geodetic(
     x,
     y,
     z,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """
@@ -133,6 +127,9 @@ def ecef2geodetic(
         z = asarray(z)
     except NameError:
         pass
+
+    if ell is None:
+        ell = Ellipsoid.from_name("wgs84")
 
     r = sqrt(x**2 + y**2 + z**2)
 
@@ -279,7 +276,7 @@ def ecef2enu(
     lat0,
     lon0,
     h0,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """
@@ -405,7 +402,7 @@ def uvw2enu(u, v, w, lat0, lon0, deg: bool = True) -> tuple:
     return East, North, Up
 
 
-def eci2geodetic(x, y, z, t: datetime, ell: Ellipsoid = ELL, *, deg: bool = True) -> tuple:
+def eci2geodetic(x, y, z, t: datetime, ell: Ellipsoid | None = None, *, deg: bool = True) -> tuple:
     """
     convert Earth Centered Internal ECI to geodetic coordinates
 
@@ -443,7 +440,9 @@ def eci2geodetic(x, y, z, t: datetime, ell: Ellipsoid = ELL, *, deg: bool = True
     return ecef2geodetic(xecef, yecef, zecef, ell, deg)
 
 
-def geodetic2eci(lat, lon, alt, t: datetime, ell: Ellipsoid = ELL, *, deg: bool = True) -> tuple:
+def geodetic2eci(
+    lat, lon, alt, t: datetime, ell: Ellipsoid | None = None, *, deg: bool = True
+) -> tuple:
     """
     convert geodetic coordinates to Earth Centered Internal ECI
 
@@ -488,7 +487,7 @@ def enu2ecef(
     lat0,
     lon0,
     h0,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """

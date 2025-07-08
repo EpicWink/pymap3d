@@ -6,6 +6,7 @@ on:
     - "**.py"
     - .github/workflows/ci_stdlib_only.yml
     - "!scripts/**"
+    - "!examples/**"
 
 jobs:
 

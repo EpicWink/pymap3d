@@ -5,6 +5,7 @@ Azimuth / elevation <==> Right ascension, declination
 from __future__ import annotations
 
 from datetime import datetime
+import sys
 
 from .timeconv import str2dt  # astropy can't handle xarray times (yet)
 from .vallado import azel2radec as vazel2radec
@@ -26,6 +27,7 @@ def azel2radec(
     lat_deg: float,
     lon_deg: float,
     time: datetime,
+    force_non_astropy: bool = False,
 ) -> tuple[float, float]:
     """
     viewing angle (az, el) to sky coordinates (ra, dec)
@@ -42,6 +44,8 @@ def azel2radec(
               observer longitude [-180, 180] (degrees)
     time : datetime.datetime or str
            time of observation
+    force_non_astropy : bool
+        if True, force use of less accurate Numpy implementation even if Astropy is available
 
     Returns
     -------
@@ -51,10 +55,10 @@ def azel2radec(
          ecliptic declination (degrees)
     """
 
-    try:
-        return azel2radec_astropy(az_deg, el_deg, lat_deg, lon_deg, time)
-    except NameError:
+    if force_non_astropy or "astropy" not in sys.modules:
         return vazel2radec(az_deg, el_deg, lat_deg, lon_deg, time)
+    else:
+        return azel2radec_astropy(az_deg, el_deg, lat_deg, lon_deg, time)
 
 
 def azel2radec_astropy(
@@ -78,6 +82,7 @@ def radec2azel(
     lat_deg: float,
     lon_deg: float,
     time: datetime,
+    force_non_astropy: bool = False,
 ) -> tuple[float, float]:
     """
     sky coordinates (ra, dec) to viewing angle (az, el)
@@ -94,6 +99,8 @@ def radec2azel(
               observer longitude [-180, 180] (degrees)
     time : datetime.datetime or str
            time of observation
+    force_non_astropy : bool
+        if True, force use of less accurate Numpy implementation even if Astropy is available
 
     Returns
     -------
@@ -103,10 +110,10 @@ def radec2azel(
              elevation [degrees above horizon (neglecting aberration)]
     """
 
-    try:
-        return radec2azel_astropy(ra_deg, dec_deg, lat_deg, lon_deg, time)
-    except NameError:
+    if force_non_astropy or "astropy" not in sys.modules:
         return vradec2azel(ra_deg, dec_deg, lat_deg, lon_deg, time)
+    else:
+        return radec2azel_astropy(ra_deg, dec_deg, lat_deg, lon_deg, time)
 
 
 def radec2azel_astropy(
