@@ -1,7 +1,11 @@
-import numpy as np
-import pymap3d as pm
+from __future__ import annotations
 
-def geodetic2nvector(lat, lon, ell=None, deg=True):
+from .mathfun import degrees, radians, sin, cos, atan2, asin
+from .ecef import geodetic2ecef, ecef2geodetic
+from .ellipsoid import Ellipsoid
+
+
+def geodetic2nvector(lat, lon, deg: bool = True) -> tuple:
     """
     Convert geodetic coordinates (latitude, longitude) to an n-vector.
 
@@ -19,13 +23,12 @@ def geodetic2nvector(lat, lon, ell=None, deg=True):
         n1, n2, n3 : ndarray
             Components of the n-vector in the Earth-Centered Earth-Fixed (ECEF) coordinate system.
     """
-    lat, lon = np.atleast_1d(lat), np.atleast_1d(lon)
 
     if deg:
-        lat, lon = np.radians(lat), np.radians(lon)
+        lat, lon = radians(lat), radians(lon)
 
-    sin_lat, cos_lat = np.sin(lat), np.cos(lat)
-    sin_lon, cos_lon = np.sin(lon), np.cos(lon)
+    sin_lat, cos_lat = sin(lat), cos(lat)
+    sin_lon, cos_lon = sin(lon), cos(lon)
 
     n1 = cos_lat * cos_lon
     n2 = cos_lat * sin_lon
@@ -33,7 +36,8 @@ def geodetic2nvector(lat, lon, ell=None, deg=True):
 
     return n1, n2, n3
 
-def nvector2geodetic(n1, n2, n3, ell=None, deg=True):
+
+def nvector2geodetic(n1, n2, n3, deg=True) -> tuple:
     """
     Convert an n-vector back to geodetic coordinates (latitude, longitude).
 
@@ -49,18 +53,18 @@ def nvector2geodetic(n1, n2, n3, ell=None, deg=True):
         lat, lon : ndarray
             Geodetic latitude(s) and longitude(s).
     """
-    n1, n2, n3 = np.atleast_1d(n1), np.atleast_1d(n2), np.atleast_1d(n3)
 
     # Compute latitude and longitude from n-vector
-    lat = np.arcsin(n3)
-    lon = np.arctan2(n2, n1)
+    lat = asin(n3)
+    lon = atan2(n2, n1)
 
     if deg:
-        lat, lon = np.degrees(lat), np.degrees(lon)
+        lat, lon = degrees(lat), degrees(lon)
 
     return lat, lon
 
-def ecef2nvector(x, y, z, ell=None, deg=True):
+
+def ecef2nvector(x, y, z, ell: Ellipsoid | None = None, deg: bool = True):
     """
     Convert ECEF coordinates to an n-vector.
 
@@ -76,10 +80,12 @@ def ecef2nvector(x, y, z, ell=None, deg=True):
         n1, n2, n3 : ndarray
             Components of the n-vector in the Earth-Centered Earth-Fixed (ECEF) coordinate system.
     """
-    lat, lon, _ = pm.ecef2geodetic(x, y, z, ell=ell, deg=deg)
-    return geodetic2nvector(lat, lon, ell=ell, deg=deg)
 
-def nvector2ecef(n1, n2, n3, alt=0, ell=None, deg=True):
+    lat, lon, _ = ecef2geodetic(x, y, z, ell=ell, deg=deg)
+    return geodetic2nvector(lat, lon, deg=deg)
+
+
+def nvector2ecef(n1, n2, n3, alt=0, ell: Ellipsoid | None = None, deg: bool = True):
     """
     Convert an n-vector to ECEF coordinates.
 
@@ -97,5 +103,5 @@ def nvector2ecef(n1, n2, n3, alt=0, ell=None, deg=True):
         x, y, z : ndarray
             ECEF coordinates in meters.
     """
-    lat, lon = nvector2geodetic(n1, n2, n3, ell=ell, deg=deg)
-    return pm.geodetic2ecef(lat, lon, alt, ell=ell, deg=deg)
+    lat, lon = nvector2geodetic(n1, n2, n3, deg=deg)
+    return geodetic2ecef(lat, lon, alt, ell=ell, deg=deg)

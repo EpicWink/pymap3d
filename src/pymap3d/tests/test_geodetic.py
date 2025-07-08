@@ -70,9 +70,12 @@ def test_scalar_geodetic2ecef(lla):
     lla1 = pm.ecef2geodetic(*xyz)
 
     try:
-        np.testing.assert_allclose(lla1, lla, rtol=1e-4)
+        lla1 = np.array(lla1)
+        lla = np.array(lla)
     except NameError:
-        assert lla1 == approx(lla, rel=1e-4)
+        pass
+
+    assert lla1 == approx(lla, rel=1e-4)
 
     if scalar:
         assert all(isinstance(n, float) for n in xyz)
@@ -107,9 +110,12 @@ def test_scalar_ecef2geodetic(xyz):
     xyz1 = pm.geodetic2ecef(*lla)
 
     try:
-        np.testing.assert_allclose(xyz1, xyz, rtol=1e-4)
+        xyz1 = np.array(xyz1)
+        xyz = np.array(xyz)
     except NameError:
-        assert xyz1 == approx(xyz, rel=1e-4)
+        pass
+
+    assert xyz1 == approx(xyz, rel=1e-4)
 
     if scalar:
         assert all(isinstance(n, float) for n in xyz1)

@@ -525,6 +525,6 @@ def enu2ecef(
     """
 
     x0, y0, z0 = geodetic2ecef(lat0, lon0, h0, ell, deg=deg)
-    dx, dy, dz = enu2uvw(e1, n1, u1, lat0, lon0, deg=deg)
+    u, v, w = enu2uvw(e1, n1, u1, lat0, lon0, deg=deg)
 
-    return x0 + dx, y0 + dy, z0 + dz
+    return x0 + u, y0 + v, z0 + w
