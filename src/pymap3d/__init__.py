@@ -32,6 +32,19 @@ Companion packages exist for:
 __version__ = "3.1.2"
 
 from .aer import aer2ecef, aer2geodetic, ecef2aer, geodetic2aer
+from .dca import (
+    enu2dca,
+    dca2enu,
+    dca2ned,
+    ned2dca,
+    ecef2dca,
+    dca2ecef,
+    geodetic2dca,
+    dca2geodetic,
+    aer2dca,
+    dca2aer,
+)
+
 from .ecef import (
     ecef2enu,
     ecef2enuv,
@@ -74,6 +87,8 @@ from .latitude import (
     geod2geoc,
     geoc2geod,
 )
+
+from .nvector import geodetic2nvector, nvector2geodetic, ecef2nvector, nvector2ecef
 
 from .rcurve import parallel, meridian, transverse, geocentric_radius
 
@@ -129,7 +144,22 @@ __all__ = [
     "authalic2geodetic",
     "geod2geoc",
     "geoc2geod",
+    "nvector2geodetic",
+    "geodetic2nvector",
+    "ecef2nvector",
+    "nvector2ecef",
+    "enu2dca",
+    "dca2enu",
+    "dca2ned",
+    "ned2dca",
+    "ecef2dca",
+    "dca2ecef",
+    "geodetic2dca",
+    "dca2geodetic",
+    "aer2dca",
+    "dca2aer",
 ]
+
 
 from .aer import aer2eci, eci2aer
 from .azelradec import azel2radec, radec2azel
