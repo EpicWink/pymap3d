@@ -6,13 +6,13 @@ from datetime import datetime
 import sys
 import logging
 
-import numpy
-
 try:
+    import numpy
     import astropy.units as u
     from astropy.coordinates import GCRS, ITRS, CartesianRepresentation, EarthLocation
 except ImportError:
     pass
+
 
 from .sidereal import greenwichsrt, juliandate
 
@@ -48,11 +48,13 @@ def eci2ecef(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
         z ECEF coordinate
     """
 
-    if force_non_astropy or "astropy" not in sys.modules:
-        logging.warning(f"{__name__}: Numpy implementation has considerably less accuracy than Astropy")
+    if "astropy" in sys.modules and not force_non_astropy:
+        xe, ye, ze = eci2ecef_astropy(x, y, z, time)
+    elif "numpy" in sys.modules:
+        logging.warning(f"{__name__}: Numpy implementation has much less accuracy than Astropy")
         xe, ye, ze = eci2ecef_numpy(x, y, z, time)
     else:
-        xe, ye, ze = eci2ecef_astropy(x, y, z, time)
+        raise ImportError("eci2ecef requires either Numpy or Astropy")
 
     return xe.squeeze()[()], ye.squeeze()[()], ze.squeeze()[()]
 
@@ -135,12 +137,13 @@ def ecef2eci(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
         z ECI coordinate
     """
 
-    # if astropy is imported
-    if force_non_astropy or "astropy" not in sys.modules:
-        logging.warning(f"{__name__}: Numpy implementation has considerably less accuracy than Astropy")
+    if "astropy" in sys.modules and not force_non_astropy:
+        xe, ye, ze = ecef2eci_astropy(x, y, z, time)
+    elif "numpy" in sys.modules:
+        logging.warning(f"{__name__}: Numpy implementation has much less accuracy than Astropy")
         xe, ye, ze = ecef2eci_numpy(x, y, z, time)
     else:
-        xe, ye, ze = ecef2eci_astropy(x, y, z, time)
+        raise ImportError("ecef2eci requires either Numpy or Astropy")
 
     return xe, ye, ze
 

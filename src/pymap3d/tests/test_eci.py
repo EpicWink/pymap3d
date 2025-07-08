@@ -50,10 +50,11 @@ def test_eci2ecef_astropy():
     assert isinstance(ecef[2], float)
 
 
-def test_ecef2eci():
+@pytest.mark.parametrize("force_non_astropy", [True, False])
+def test_ecef2eci(force_non_astropy):
     pytest.importorskip("numpy")
     # this example from Matlab ecef2eci docs
-    eci = pm.ecef2eci(*ECEF, UTC, force_non_astropy=True)
+    eci = pm.ecef2eci(*ECEF, UTC, force_non_astropy=force_non_astropy)
 
     assert isinstance(eci[0], float)
     assert isinstance(eci[1], float)

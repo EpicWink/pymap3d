@@ -10,7 +10,6 @@ within double precision arithmetic limitations
 """
 
 import sys
-import logging
 
 try:
     from astropy.coordinates import angular_separation
@@ -110,11 +109,10 @@ def anglesep(
         lon1 = radians(lon1)
         lat1 = radians(lat1)
 
-    if force_non_astropy or "astropy" not in sys.modules:
-        logging.warning(f"{__name__}: Numpy implementation has considerably less accuracy than Astropy")
-        sep_rad = anglesep_meeus(lon0, lat0, lon1, lat1, deg=False)
-    else:
+    if "astropy" in sys.modules and not force_non_astropy:
         sep_rad = angular_separation(lon0, lat0, lon1, lat1)
+    else:
+        sep_rad = anglesep_meeus(lon0, lat0, lon1, lat1, deg=False)
 
     return degrees(sep_rad) if deg else sep_rad
 

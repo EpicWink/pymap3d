@@ -42,12 +42,11 @@ def datetime2sidereal(time: datetime, lon_radians: float, force_non_astropy: boo
     if isinstance(time, (tuple, list)):
         return [datetime2sidereal(t, lon_radians) for t in time]
 
-    if force_non_astropy or "astropy" not in sys.modules:
+    if "astropy" in sys.modules and not force_non_astropy:
+        return datetime2sidereal_astropy(time, lon_radians)
+    else:
         logging.debug(f"{__name__}: Vallado implementation")
         return datetime2sidereal_vallado(time, lon_radians)
-    else:
-        logging.debug(f"{__name__}: Astropy implementation")
-        return datetime2sidereal_astropy(time, lon_radians)
 
 
 def datetime2sidereal_astropy(t: datetime, lon_radians: float):

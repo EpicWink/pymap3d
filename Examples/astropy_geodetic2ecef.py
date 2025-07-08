@@ -16,7 +16,7 @@ import pymap3d as pm
 try:
     from pymap3d.tests.matlab_engine import matlab_ecef2eci, matlab_engine, has_matmap3d
 except ImportError:
-    matlab_engine = None
+    pass
 
 print("Python version:", sys.version)
 print("AstroPy version:", astropy.__version__)
@@ -43,20 +43,18 @@ print("\nECEF Coordinates (meters):")
 print(np.array(ecef))
 
 # %% AstroPy ECEF to ECI (J2000)
-astropy_eci = pm.ecef2eci(ecef[0], ecef[1], ecef[2], dt)
-astropy_eci = np.array(astropy_eci)
+astropy_eci = np.array(pm.ecef2eci(ecef[0], ecef[1], ecef[2], dt))
 print("\nAstroPy: ECI Coordinates (meters):")
 print(astropy_eci)
 
-numpy_eci = pm.ecef2eci(ecef[0], ecef[1], ecef[2], dt, force_non_astropy=True)
-numpy_eci = np.array(numpy_eci)
+numpy_eci = np.array(pm.ecef2eci(ecef[0], ecef[1], ecef[2], dt, force_non_astropy=True))
 print("\nNumpy: ECI Coordinates (meters):")
 print(numpy_eci)
 
 print("\nAstroPy - Numpy Difference (ECI meters):", astropy_eci - numpy_eci)
 
 # %% Matlab comparison
-if matlab_engine is not None:
+if matlab_engine in sys.modules:
     eng = matlab_engine()
     eci_matlab_aerospace = matlab_ecef2eci(eng, False, dt, ecef)
     print("\nMatlab Aerospace Toolbox: ECI Coordinates (meters):")

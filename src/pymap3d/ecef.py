@@ -6,20 +6,13 @@ import warnings
 
 try:
     from numpy import asarray, empty_like, finfo, where
-
-    from .eci import ecef2eci, eci2ecef
 except ImportError:
-
-    def eci2ecef(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
-        raise ImportError("Numpy required for eci2ecef")
-
-    def ecef2eci(x, y, z, time: datetime, force_non_astropy: bool = False) -> tuple:
-        raise ImportError("Numpy required for ecef2eci")
-
+    pass
 
 from datetime import datetime
 from math import pi
 
+from .eci import ecef2eci, eci2ecef
 from .ellipsoid import Ellipsoid
 from .mathfun import atan, atan2, cos, degrees, hypot, isclose, radians, sin, sqrt, tan
 
