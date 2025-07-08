@@ -15,8 +15,6 @@ from .mathfun import atan2, cos, degrees, hypot, radians, sin
 
 __all__ = ["enu2aer", "aer2enu", "enu2geodetic", "geodetic2enu", "enu2ecefv"]
 
-ELL = Ellipsoid.from_name("wgs84")
-
 
 def enu2aer(e, n, u, deg: bool = True) -> tuple:
     """
@@ -118,7 +116,7 @@ def enu2geodetic(
     lat0,
     lon0,
     h0,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """
@@ -166,7 +164,7 @@ def geodetic2enu(
     lat0,
     lon0,
     h0,
-    ell: Ellipsoid = ELL,
+    ell: Ellipsoid | None = None,
     deg: bool = True,
 ) -> tuple:
     """
